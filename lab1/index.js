@@ -8,7 +8,9 @@ przeliczButton.addEventListener('click', () => {
 })
 
 for (const inputElement of inputElements) {
-    inputElement.addEventListener('keypress', () => wyniki.textContent = calculateStats())
+    inputElement.addEventListener('change', () => {
+        wyniki.textContent = calculateStats()
+    })
 }
 
 function calculateStats() {

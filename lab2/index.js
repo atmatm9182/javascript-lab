@@ -26,8 +26,6 @@ for (const btn of imageButtons) {
     })
 }
 
-slider.appendChild(images[0]);
-
 const anim = setInterval(() => {
     slider.removeChild(images[idx % images.length]);
     slider.appendChild(images[(idx + 1) % images.length]);

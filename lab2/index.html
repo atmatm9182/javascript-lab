@@ -7,9 +7,10 @@
     <title>Document</title>
     <style>
         .slider {
-            width: 100%;
+            width: 80%;
             height: 400px;
             border: 1px solid black;
+            margin: 10px auto 0px auto;
         }
 
         #slider-inner {
@@ -21,20 +22,29 @@
 
         img {
             opacity: 0;
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
         }
 
-        #slider-inner>img {
+        #slider-inner > * {
             opacity: 100;
             width: 100%;
             height: 100%;
+        }
+
+        #image-buttons {
+            margin-top: 15px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
     <section class="slider">
-        <div id="slider-inner">
-        </div>
+        <div id="slider-inner"></div>
+
         <img src="./images/red.jpg" alt="red">
         <img src="./images/green.jpg" alt="green">
         <img src="./images/blue.jpg" alt="blue">
@@ -49,9 +59,11 @@
             <input type="radio" name="img" value="4">
             <input type="radio" name="img" value="5">
             <input type="radio" name="img" value="6">
+            <br/>
+
+            <button id="previous-btn">Previous</button>
+            <button id="next-btn">Next</button>
         </div>
-        <button id="previous-btn">Previous</button>
-        <button id="next-btn">Next</button>
     </section>
     <script src="./index.js"></script>
 </body>

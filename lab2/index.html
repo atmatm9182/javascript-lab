@@ -1,71 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        .slider {
-            width: 80%;
-            height: 400px;
-            border: 1px solid black;
-            margin: 10px auto 0px auto;
-        }
-
-        #slider-inner {
-            width: 100%;
-            height: 100%;
-            background: lightblue;
-            display: flex;
-        }
-
-        img {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            margin: 0;
-            padding: 0;
-        }
-
-        #slider-inner > * {
-            opacity: 100;
-            width: 100%;
-            height: 100%;
-        }
-
-        #image-buttons {
-            margin-top: 15px;
-            text-align: center;
-        }
-    </style>
-</head>
-
-<body>
-    <section class="slider">
-        <div id="slider-inner"></div>
-
-        <img src="./images/red.jpg" alt="red">
-        <img src="./images/green.jpg" alt="green">
-        <img src="./images/blue.jpg" alt="blue">
-        <img src="./images/magenta.jpg" alt="magenta">
-        <img src="./images/yellow.jpg" alt="yellow">
-        <img src="./images/orange.jpg" alt="orange">
-
-        <div id="image-buttons">
-            <input type="radio" name="img" value="1">
-            <input type="radio" name="img" value="2">
-            <input type="radio" name="img" value="3">
-            <input type="radio" name="img" value="4">
-            <input type="radio" name="img" value="5">
-            <input type="radio" name="img" value="6">
-            <br/>
-
-            <button id="previous-btn">Previous</button>
-            <button id="next-btn">Next</button>
-        </div>
-    </section>
-    <script src="./index.js"></script>
-</body>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            .slider {
+                width: 80%;
+                height: 400px;
+                border: 1px solid black;
+                margin: 10px auto 0px auto;
+            }
+    
+            #slider-inner {
+                width: 100%;
+                height: 100%;
+                background: lightblue;
+                display: flex;
+            }
+    
+            img {
+                opacity: 0;
+                width: 0;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+    
+            #slider-inner > * {
+                opacity: 100;
+                width: 100%;
+                height: 100%;
+            }
+    
+            #image-buttons {
+                margin-top: 15px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <section class="slider">
+            <div id="slider-inner"></div>
+    
+            <img src="./images/red.jpg" alt="red">
+            <img src="./images/green.jpg" alt="green">
+            <img src="./images/blue.jpg" alt="blue">
+            <img src="./images/magenta.jpg" alt="magenta">
+            <img src="./images/yellow.jpg" alt="yellow">
+            <img src="./images/orange.jpg" alt="orange">
+    
+            <div id="image-buttons">
+                <input type="radio" name="img" value="1">
+                <input type="radio" name="img" value="2">
+                <input type="radio" name="img" value="3">
+                <input type="radio" name="img" value="4">
+                <input type="radio" name="img" value="5">
+                <input type="radio" name="img" value="6">
+                <br/>
+    
+                <button id="previous-btn">Previous</button>
+                <button id="next-btn">Next</button>
+                <button id="pause-btn">Pause</button>
+            </div>
+        </section>
+        <script src="./index.js"></script>
+    </body>
 </html>

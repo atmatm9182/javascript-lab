@@ -6,12 +6,16 @@
     <title>Document</title>
 </head>
 <body>
-    <audio src="./sounds/snare.wav" controls data-key="a"></audio>
-    <audio src="./sounds/clap.wav" controls data-key="s"></audio>
-    <audio src="./sounds/tink.wav" controls data-key="d"></audio>
-    <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
-    <script src="./index.js">
-        
-    </script>
+    <div id="sounds">
+        <audio src="./sounds/snare.wav" controls data-key="a"></audio>
+        <audio src="./sounds/clap.wav" controls data-key="s"></audio>
+        <audio src="./sounds/tink.wav" controls data-key="d"></audio>
+        <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
+    </div>
+    <button id="record-btn">Start recording</button>
+    <button id="stop-btn">Stop recording</button>
+    <button id="play-recording-btn">Play recording</button>
+
+    <script src="./index.js"></script>
 </body>
 </html>

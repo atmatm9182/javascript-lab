@@ -19,7 +19,7 @@
                 display: flex;
             }
     
-            img {
+            .slide {
                 opacity: 0;
                 width: 0;
                 height: 0;
@@ -33,7 +33,7 @@
                 height: 100%;
             }
     
-            #image-buttons {
+            #slider-buttons {
                 margin: auto;
                 text-align: center;
             }
@@ -49,15 +49,15 @@
             <div id="slider-inner"></div>
    
             <div id="images">
-                <img src="./images/red.jpg" alt="red">
-                <img src="./images/green.jpg" alt="green">
-                <img src="./images/blue.jpg" alt="blue">
-                <img src="./images/magenta.jpg" alt="magenta">
-                <img src="./images/yellow.jpg" alt="yellow">
-                <img src="./images/orange.jpg" alt="orange">
+                <img class="slide" src="./images/red.jpg" alt="red">
+                <img class="slide" src="./images/green.jpg" alt="green">
+                <img class="slide" src="./images/blue.jpg" alt="blue">
+                <img class="slide" src="./images/magenta.jpg" alt="magenta">
+                <img class="slide" src="./images/yellow.jpg" alt="yellow">
+                <img class="slide" src="./images/orange.jpg" alt="orange">
             </div>
     
-            <div id="image-buttons">
+            <div id="slider-buttons">
                 <input type="radio" name="img" value="1">
                 <input type="radio" name="img" value="2">
                 <input type="radio" name="img" value="3">

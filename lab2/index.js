@@ -4,38 +4,41 @@ const slideButtons = document.querySelector("#slider-buttons").getElementsByTagN
 const prevButton = document.querySelector("#previous-btn");
 const nextButton = document.querySelector("#next-btn");
 const pauseButton = document.querySelector("#pause-btn")
+const dialog = document.querySelector("dialog");
+const dialogSlidePlaceholder = document.querySelector("dialog div");
+const closeDialogButton = document.querySelector("dialog button");
 
 let slideIdx = 0;
 
 setCurrentSlide(slideIdx);
 
 function setCurrentSlide(idx) {
-    slider.appendChild(slides[idx]);
+    for (const slide of slides)
+        slide.classList.remove("active");
+
+    slides[idx].classList.add("active");
     slideButtons[idx].checked = true;
+    idx++;
 }
 
 prevButton.addEventListener("click", () => {
-    slider.innerHTML = '';
     slideIdx = slideIdx - 1 >= 0 ? slideIdx - 1 : slides.length - 1;
     setCurrentSlide(slideIdx % slides.length);
     
-    clearTimeout(lastTimer);
-    lastTimer = scheduleTimer();
+    resetTimer();
 })
 
 nextButton.addEventListener("click", () => {
-    slider.innerHTML = '';
     setCurrentSlide(++slideIdx % slides.length);
 
-    clearTimeout(lastTimer);
-    lastTimer = scheduleTimer();
+    resetTimer();
 })
 
 for (const btn of slideButtons) {
     btn.addEventListener("change", () => {
-        slider.innerHTML = '';
         slideIdx = btn.value - 1;
         setCurrentSlide(slideIdx);
+        resetTimer();
     })
 }
 
@@ -43,20 +46,42 @@ let isPaused = false;
 
 pauseButton.addEventListener("click", () => {
     isPaused = !isPaused;
+    pauseButton.textContent = isPaused ? "Unpause" : "Pause";
+});
+
+for (const slide of slides) {
+    if (slide.tagName == "IMG" || slide.tagName == "VIDEO") {
+        slide.addEventListener("click", () => { 
+            dialogSlidePlaceholder.innerHTML = "";
+
+            const clonedSlide = slide.cloneNode(true);
+            dialogSlidePlaceholder.appendChild(clonedSlide);
+            dialog.showModal(); 
+
+            isPaused = true;
+        });
+    }
+}
+
+closeDialogButton.addEventListener("click", () => { 
+    dialog.close(); 
+    isPaused = false;
 });
 
 function scheduleTimer() {
     return setTimeout(() => {
         lastTimer = scheduleTimer();
-        console.log(lastTimer);
 
         if (isPaused)
             return;
     
-        slider.removeChild(slides[slideIdx % slides.length]);
-        setCurrentSlide((slideIdx + 1) % slides.length);
-        slideIdx++;
+        setCurrentSlide(++slideIdx % slides.length);
     }, 3000);
+}
+
+function resetTimer() {
+    clearTimeout(lastTimer);
+    lastTimer = scheduleTimer();
 }
 
 let lastTimer = scheduleTimer();

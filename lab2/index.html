@@ -19,15 +19,18 @@
                 display: flex;
             }
     
-            .slide {
+            #slider-inner > .slide {
                 opacity: 0;
                 width: 0;
                 height: 0;
                 margin: 0;
                 padding: 0;
+
+                transition-property: width;
+                transition-duration: 1s;
             }
     
-            #slider-inner > * {
+            #slider-inner > .active {
                 opacity: 100;
                 width: 100%;
                 height: 100%;
@@ -38,25 +41,37 @@
                 text-align: center;
             }
 
-            #images {
+            #slides-container {
                 height: 1vh;
+            }
+
+            dialog {
+                min-width: 60vw;
+                min-height: 60vh;
+            }
+
+            dialog > div {
+                text-align: center;
+            }
+
+            dialog > div > * {
+                width: 90%;
+                height: 90%;
             }
         </style>
     </head>
     
     <body>
         <section class="slider">
-            <div id="slider-inner"></div>
-   
-            <div id="images">
-                <img class="slide" src="./images/red.jpg" alt="red">
+            <div id="slider-inner">
+                <img class="slide active" src="./images/red.jpg" alt="red">
                 <img class="slide" src="./images/green.jpg" alt="green">
                 <img class="slide" src="./images/blue.jpg" alt="blue">
                 <img class="slide" src="./images/magenta.jpg" alt="magenta">
                 <img class="slide" src="./images/yellow.jpg" alt="yellow">
                 <img class="slide" src="./images/orange.jpg" alt="orange">
             </div>
-    
+   
             <div id="slider-buttons">
                 <input type="radio" name="img" value="1">
                 <input type="radio" name="img" value="2">
@@ -71,6 +86,11 @@
                 <button id="pause-btn">Pause</button>
             </div>
         </section>
+
+        <dialog>
+            <div></div>
+            <button>Close</button>
+        </dialog>
         <script src="./index.js"></script>
     </body>
 </html>

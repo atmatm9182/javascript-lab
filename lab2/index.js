@@ -9,9 +9,6 @@ let slideIdx = 0;
 
 setCurrentSlide(slideIdx);
 
-/**
- * @param {number} idx
- */
 function setCurrentSlide(idx) {
     slider.appendChild(images[idx]);
     imageButtons[idx].checked = true;
@@ -21,11 +18,17 @@ prevButton.addEventListener("click", () => {
     slider.innerHTML = '';
     slideIdx = slideIdx - 1 >= 0 ? slideIdx - 1 : images.length - 1;
     setCurrentSlide(slideIdx % images.length);
+    
+    clearTimeout(lastTimer);
+    lastTimer = scheduleTimer();
 })
 
 nextButton.addEventListener("click", () => {
     slider.innerHTML = '';
     setCurrentSlide(++slideIdx % images.length);
+
+    clearTimeout(lastTimer);
+    lastTimer = scheduleTimer();
 })
 
 for (const btn of imageButtons) {
@@ -42,11 +45,18 @@ pauseButton.addEventListener("click", () => {
     isPaused = !isPaused;
 });
 
-const anim = setInterval(() => {
-    if (isPaused)
-        return;
+function scheduleTimer() {
+    return setTimeout(() => {
+        lastTimer = scheduleTimer();
+        console.log(lastTimer);
 
-    slider.removeChild(images[slideIdx % images.length]);
-    setCurrentSlide((slideIdx + 1) % images.length);
-    slideIdx++;
-}, 3000);
+        if (isPaused)
+            return;
+    
+        slider.removeChild(images[slideIdx % images.length]);
+        setCurrentSlide((slideIdx + 1) % images.length);
+        slideIdx++;
+    }, 3000);
+}
+
+let lastTimer = scheduleTimer();

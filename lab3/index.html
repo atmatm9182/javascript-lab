@@ -9,6 +9,11 @@
       #metronome-sound {
         display: none;
       }
+
+      #metronome {
+        margin: 1em;
+        width: fit-content;
+      }
     </style>
   </head>
   <body>
@@ -21,14 +26,15 @@
 
     <audio id="metronome-sound" src="./sounds/metronome.mp3"></audio>
 
-    <div id="metronome">
-      <input type="range" min="1" max="180" value="60">
-      <button type="submit">Start</button>
-    </div>
-
     <button id="record-btn">Start recording</button>
     <button id="stop-btn">Stop recording</button>
     <button id="play-recording-btn">Play recording</button>
+
+    <fieldset id="metronome">
+      <legend>Metronome</legend>
+      <input type="range" min="1" max="180" value="60">
+      <button type="submit">Start</button>
+    </fieldset>
 
     <script src="./index.js"></script>
   </body>

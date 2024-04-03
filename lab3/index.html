@@ -12,6 +12,13 @@
 
       #metronome {
         margin: 1em;
+        display: inline-block;
+        width: fit-content;
+      }
+
+      #looper {
+        margin: 1em;
+        display: inline-block;
         width: fit-content;
       }
     </style>
@@ -34,6 +41,12 @@
       <legend>Metronome</legend>
       <input type="range" min="1" max="180" value="60">
       <button type="submit">Start</button>
+    </fieldset>
+
+    <fieldset id="looper">
+      <legend>Looper</legend>
+      <input type="checkbox" name="enabled"></input>
+      <label for="enabled">Enable the looper</label>
     </fieldset>
 
     <script src="./index.js"></script>

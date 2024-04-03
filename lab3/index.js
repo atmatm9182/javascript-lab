@@ -3,7 +3,8 @@ const soundElements = document.querySelectorAll("audio");
 const sounds = {};
 
 for (const sound of soundElements) {
-    sounds[sound.dataset.key] = sound;
+    if (sound.dataset.key)
+        sounds[sound.dataset.key] = sound;
 }
 
 const recordButton = document.querySelector("#record-btn");
@@ -11,6 +12,34 @@ const recordButton = document.querySelector("#record-btn");
 const recordingMap = [];
 
 let recordingEventListener = null;
+
+const looper = document.querySelector("#looper");
+const looperEnabledCheckbox = looper.getElementsByTagName("input").item(0);
+
+let looperInterval = null;
+
+looperEnabledCheckbox.addEventListener("click", () => {
+    const soundsArray = Object.values(sounds);
+    const maxSoundDuration = soundsArray.reduce((prev, cur) => {
+        return cur.duration > prev.duration ? cur : prev
+    }, soundsArray[0]).duration;
+
+    for (const [_, sound] of Object.entries(sounds)) {
+        sound.currentTime = 0;
+        sound.play();
+    }
+
+    if (looperEnabledCheckbox.checked) {
+        looperInterval = setInterval(() => {
+            for (const [_, sound] of Object.entries(sounds)) {
+                sound.currentTime = 0;
+                sound.play();
+            }
+        }, maxSoundDuration * 1000);
+    } else {
+        clearInterval(looperInterval);
+    }
+})
 
 recordButton.addEventListener('click', () => {
     const recordingStartTime = Date.now();
@@ -71,4 +100,4 @@ metronomeButton.addEventListener("click", () => {
         }, 60000 / freq.valueAsNumber);
         metronomeButton.textContent = "Stop";
     }
-})
+});

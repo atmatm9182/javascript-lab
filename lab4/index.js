@@ -17,7 +17,6 @@ class Note {
     }
 }
 
-/** @type {Note[]} */
 const notes = [];
 
 for (let i = 0; i < localStorage.length; i++) {
@@ -38,6 +37,15 @@ notes.sort((a, b) => {
     return a.createdAt < b.createdAt ? -1 : 1;
 });
 
+const noteStyle = `
+    width: 40%;
+    margin: 2em auto;
+    padding: 1em;
+    border: 2px solid black;
+`;
+
+const formStyle = noteStyle;
+
 for (const note of notes) {
     const noteBody = document.createElement("section");
     const noteTitle = document.createElement("header");
@@ -51,10 +59,12 @@ for (const note of notes) {
     noteBody.style.backgroundColor = note.color;
     noteBody.append(noteTitle, noteContents, noteCreatedAt);
 
+    noteBody.style = `${noteStyle} background-color: ${note.color};`;
+
     document.body.appendChild(noteBody);
 }
 
-const temp = `
+const formHtml = `
         <input name="title" type="text"/>
         <label for="title">Title</label>
         <br>
@@ -66,14 +76,19 @@ const temp = `
         <input name="pinned" type="checkbox" />
         <label for="pinned">Pin</label> 
         <br>
-
-        <button>Create</button>
 `;
 
 function createDefaultForm() {
     const form = document.createElement("form");
-    form.innerHTML = temp;
-    form.classList.add("note-form");
+    form.innerHTML = formHtml;
+    form.style = formStyle;
+
+    const colorSelectors = getColorSelector();
+    form.append(...colorSelectors);
+
+    const button = document.createElement("button");
+    button.innerText = "Create";
+    form.appendChild(button);
 
     form.addEventListener("submit", () => {
         const submitter = form.getElementsByTagName("button")[0];
@@ -82,11 +97,31 @@ function createDefaultForm() {
 
         notes.push(formData);
         localStorage.setItem(`note-${note.title}`, JSON.stringify(note));
-
-        form.reset();
     });
 
     return form;
+}
+
+function getColorSelector() {
+    const defaultColors = ["seagreen", "skyblue", "fuchsia", "coral"];
+
+    return defaultColors.flatMap(color => {
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "color";
+        radio.id = color;
+        radio.value = color;
+
+        const label = document.createElement("label");
+        label.htmlFor = color;
+        
+        const colorDiv = document.createElement("div");
+        colorDiv.style = `display: inline-block; width: 2vw; height: 2vh; background-color: ${color}`;
+
+        label.appendChild(colorDiv);
+
+        return [radio, label];
+    });
 }
 
 document.body.appendChild(createDefaultForm());

@@ -152,13 +152,13 @@ searchBox.addEventListener("submit", (e) => {
     const submitter = searchBox.getElementsByTagName("button")[0];
     const formData = new FormData(searchBox, submitter);
 
-    const tags = formData.get("tags");
+    const tags = formData.get("tags").split(",").filter(s => s.length !== 0);
     const title = formData.get("title");
     const color = formData.get("color");
 
     e.preventDefault();
 
-    if (tags === "" && title == "" && color == "") {
+    if (tags.length === 0 && title === "" && color === "") {
         notes = initialNotes;
         noteContainer.innerHTML = "";
         renderNotes();
@@ -189,12 +189,9 @@ function filterNotesBySearchQuery(query) {
         return false;
     }
 
-    const newNotes = notes.filter(getFilter(query));
-    console.log(newNotes);
-
+    notes = initialNotes.filter(getFilter(query));
     noteContainer.innerHTML = "";
 
-    notes = newNotes;
     renderNotes();
 }
 

@@ -50,3 +50,25 @@ stopButton.addEventListener('click', () => {
         sound.play();
     })
 });
+
+const metronomeSound = document.querySelector("#metronome-sound");
+const metronome = document.querySelector("#metronome");
+
+let metronomeTimer = null;
+
+const metronomeButton = metronome.getElementsByTagName("button").item(0);
+metronomeButton.addEventListener("click", () => {
+    const freq = metronome.getElementsByTagName("input").item(0);
+
+    if (metronomeTimer) {
+        clearInterval(metronomeTimer);
+        metronomeTimer = null;
+        metronomeButton.textContent = "Play";
+    } else {
+        metronomeTimer = setInterval(() => { 
+            metronomeSound.currentTime = 0; 
+            metronomeSound.play();
+        }, 60000 / freq.valueAsNumber);
+        metronomeButton.textContent = "Stop";
+    }
+})

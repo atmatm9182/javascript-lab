@@ -1,21 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+
+    <style>
+      #metronome-sound {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
     <div id="sounds">
-        <audio src="./sounds/snare.wav" controls data-key="a"></audio>
-        <audio src="./sounds/clap.wav" controls data-key="s"></audio>
-        <audio src="./sounds/tink.wav" controls data-key="d"></audio>
-        <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
+      <audio src="./sounds/snare.wav" controls data-key="a"></audio>
+      <audio src="./sounds/clap.wav" controls data-key="s"></audio>
+      <audio src="./sounds/tink.wav" controls data-key="d"></audio>
+      <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
     </div>
+
+    <audio id="metronome-sound" src="./sounds/metronome.mp3"></audio>
+
+    <div id="metronome">
+      <input type="range" min="1" max="180" value="60">
+      <button type="submit">Start</button>
+    </div>
+
     <button id="record-btn">Start recording</button>
     <button id="stop-btn">Stop recording</button>
     <button id="play-recording-btn">Play recording</button>
 
     <script src="./index.js"></script>
-</body>
+  </body>
 </html>

@@ -10,9 +10,33 @@
         width: fit-content;
         margin: 1em;
       }
+
+      #search-box {
+        border: 2px solid black;
+        padding: 1em;
+        position: absolute;
+        top: 1em;
+        left: 1em;
+      }
+
+      #search-box > input {
+        margin: 0.5em 0;
+      }
     </style>
   </head>
   <body>
+    <form id="search-box">
+      <input type="text" id="tags" name="tags" />
+      <label for="tags">Tags</label>
+      <br>
+      <input type="text" id="title" name="title" />
+      <label for="title">Title</label>
+      <br>
+      <input type="text" id="color" name="color" />
+      <label for="color">Color</label>
+      <br>
+      <button type="submit">Search</button>
+    </form>
     <script src="./index.js"></script>
   </body>
 </html>

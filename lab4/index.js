@@ -1,9 +1,10 @@
 class Note {
-    constructor(title, contents, color, pinned, createdAt) {
+    constructor(title, contents, color, pinned, tags, createdAt) {
         this.title = title;
         this.contents = contents;
         this.color = color;
         this.pinned = pinned;
+        this.tags = tags;
         this.createdAt = createdAt;
     }
 
@@ -12,8 +13,9 @@ class Note {
         const contents = formData.get("contents");
         const color = formData.get("color");
         const pinned = formData.get("pinned");
+        const tags = formData.get("tags").split(",").filter(tag => tag.length != 0).map(tag => tag.trim());
 
-        return new Note(title, contents, color, pinned, Date.now());
+        return new Note(title, contents, color, pinned, tags, Date.now());
     }
 }
 
@@ -49,15 +51,23 @@ const formStyle = noteStyle;
 for (const note of notes) {
     const noteBody = document.createElement("section");
     const noteTitle = document.createElement("header");
+    const noteTags = document.createElement("p");
     const noteContents = document.createElement("p");
     const noteCreatedAt = document.createElement("p");
 
     noteTitle.textContent = note.title;
+    noteTitle.style.fontSize = "1.2em";
+
+    if (note.tags.length != 0)
+        noteTags.textContent = `Tags: ${note.tags.join(" ")}`;
+
+    noteCreatedAt.textContent = `Created at: ${new Date(note.createdAt).toLocaleString()}`;
+
     noteContents.textContent = note.contents;
-    noteCreatedAt.textContent = new Date(note.createdAt).toLocaleString();
+    noteContents.style = "border: 1px solid black; padding: 0.5em; background-color: white;";
 
     noteBody.style.backgroundColor = note.color;
-    noteBody.append(noteTitle, noteContents, noteCreatedAt);
+    noteBody.append(noteTitle, noteTags, noteCreatedAt, noteContents);
 
     noteBody.style = `${noteStyle} background-color: ${note.color};`;
 
@@ -75,6 +85,9 @@ const formHtml = `
 
         <input name="pinned" type="checkbox" />
         <label for="pinned">Pin</label> 
+
+        <input name="tags" type="text" />
+        <label for="tags">Tags</label>
         <br>
 `;
 

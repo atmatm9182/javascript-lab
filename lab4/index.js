@@ -87,6 +87,7 @@ function createDefaultForm() {
     form.append(...colorSelectors);
 
     const button = document.createElement("button");
+    button.style.display = "block";
     button.innerText = "Create";
     form.appendChild(button);
 
@@ -98,6 +99,10 @@ function createDefaultForm() {
         notes.push(formData);
         localStorage.setItem(`note-${note.title}`, JSON.stringify(note));
     });
+
+    for (let i = 0; i < form.children.length; i++) {
+        form.children.item(i).style = "margin: 0.5em 2px;";
+    }
 
     return form;
 }

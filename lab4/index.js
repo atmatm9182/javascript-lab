@@ -1,11 +1,12 @@
 class Note {
-    constructor(title, contents, color, pinned, tags, createdAt) {
+    constructor(title, contents, color, pinned, tags, createdAt, dueTo) {
         this.title = title;
         this.contents = contents;
         this.color = color;
         this.pinned = pinned;
         this.tags = tags;
         this.createdAt = createdAt;
+        this.dueTo = dueTo;
     }
 
     static fromForm(formData) {
@@ -18,8 +19,9 @@ class Note {
             .split(",")
             .filter((tag) => tag.length != 0)
             .map((tag) => tag.trim());
+        const dueTo = Date.parse(formData.get("due-to"));
 
-        return new Note(title, contents, color, pinned, tags, Date.now());
+        return new Note(title, contents, color, pinned, tags, Date.now(), dueTo);
     }
 }
 
@@ -58,9 +60,12 @@ function renderNotes() {
         const noteTags = document.createElement("p");
         const noteContents = document.createElement("p");
         const noteCreatedAt = document.createElement("p");
+        const noteDueTo = document.createElement("p");
     
         noteTitle.textContent = note.title;
         noteTitle.style.fontSize = "1.2em";
+
+        noteDueTo.textContent = `Due to: ${new Date(note.dueTo).toLocaleString()}`;
     
         if (note.tags.length != 0)
             noteTags.textContent = `Tags: ${note.tags.join(" ")}`;
@@ -71,7 +76,7 @@ function renderNotes() {
         noteContents.style = "border: 1px solid black; padding: 0.5em; background-color: white;";
     
         noteBody.style.backgroundColor = note.color;
-        noteBody.append(noteTitle, noteTags, noteCreatedAt, noteContents);
+        noteBody.append(noteTitle, noteTags, noteCreatedAt, noteContents, noteDueTo);
     
         noteBody.style = `${noteStyle} background-color: ${note.color};`;
     
@@ -93,6 +98,10 @@ const formHtml = `
 
 <input name="tags" type="text" />
 <label for="tags">Tags</label>
+<br>
+
+<input name="due-to" type="text" />
+<label for="due-to">Due to</label>
 <br>
 `;
 
@@ -197,5 +206,18 @@ function filterNotesBySearchQuery(query) {
 
 renderNotes();
 const initialNotes = notes;
+
+setInterval(() => {
+  const messages = [];
+  for (const note of initialNotes) {
+    const diff = note.dueTo - Date.now();
+    if (diff <= 300_000) /* 5 minutes */ {
+      messages.push(`Note ${note.title} is due in ${Math.floor(diff / (1000 * 60))} minutes!`);
+    }
+  }
+
+  if (messages.length != 0)
+    alert(messages.join("\n"));
+}, 60000);
 
 document.body.appendChild(createDefaultForm());

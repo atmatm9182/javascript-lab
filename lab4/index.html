@@ -1,50 +1,50 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      .note-form {
-        border: 2px solid black;
-        width: fit-content;
-        margin: 1em;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .note-form {
+                border: 2px solid black;
+                width: fit-content;
+                margin: 1em;
+            }
 
-      #search-box {
-        border: 2px solid black;
-        padding: 1em;
-        position: absolute;
-        top: 1em;
-        left: 1em;
-      }
+            #search-box {
+                border: 2px solid black;
+                padding: 1em;
+                position: absolute;
+                top: 1em;
+                left: 1em;
+            }
 
-      #search-box > input {
-        margin: 0.5em 0;
-      }
+            #search-box > input {
+                margin: 0.5em 0;
+            }
 
-      #note-container {
-        width: 100vw;
-        height: fit-content;
-      }
-    </style>
-  </head>
-  <body>
-    <form id="search-box">
-      <input type="text" id="tags" name="tags" />
-      <label for="tags">Tags</label>
-      <br>
-      <input type="text" id="title" name="title" />
-      <label for="title">Title</label>
-      <br>
-      <input type="text" id="color" name="color" />
-      <label for="color">Color</label>
-      <br>
-      <button type="submit">Search</button>
-    </form>
+            #note-container {
+                width: 100vw;
+                height: fit-content;
+            }
+        </style>
+    </head>
+    <body>
+        <form id="search-box">
+            <input type="text" id="tags" name="tags" />
+            <label for="tags">Tags</label>
+            <br />
+            <input type="text" id="title" name="title" />
+            <label for="title">Title</label>
+            <br />
+            <input type="text" id="color" name="color" />
+            <label for="color">Color</label>
+            <br />
+            <button type="submit">Search</button>
+        </form>
 
-    <div id="note-container"></div>
+        <div id="note-container"></div>
 
-    <script src="./index.js"></script>
-  </body>
+        <script src="./index.js"></script>
+    </body>
 </html>

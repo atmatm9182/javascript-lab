@@ -1,54 +1,54 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
 
-    <style>
-      #metronome-sound {
-        display: none;
-      }
+        <style>
+            #metronome-sound {
+                display: none;
+            }
 
-      #metronome {
-        margin: 1em;
-        display: inline-block;
-        width: fit-content;
-      }
+            #metronome {
+                margin: 1em;
+                display: inline-block;
+                width: fit-content;
+            }
 
-      #looper {
-        margin: 1em;
-        display: inline-block;
-        width: fit-content;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="sounds">
-      <audio src="./sounds/snare.wav" controls data-key="a"></audio>
-      <audio src="./sounds/clap.wav" controls data-key="s"></audio>
-      <audio src="./sounds/tink.wav" controls data-key="d"></audio>
-      <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
-    </div>
+            #looper {
+                margin: 1em;
+                display: inline-block;
+                width: fit-content;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sounds">
+            <audio src="./sounds/snare.wav" controls data-key="a"></audio>
+            <audio src="./sounds/clap.wav" controls data-key="s"></audio>
+            <audio src="./sounds/tink.wav" controls data-key="d"></audio>
+            <audio src="./sounds/vine-boom.mp3" controls data-key="r"></audio>
+        </div>
 
-    <audio id="metronome-sound" src="./sounds/metronome.mp3"></audio>
+        <audio id="metronome-sound" src="./sounds/metronome.mp3"></audio>
 
-    <button id="record-btn">Start recording</button>
-    <button id="stop-btn">Stop recording</button>
-    <button id="play-recording-btn">Play recording</button>
+        <button id="record-btn">Start recording</button>
+        <button id="stop-btn">Stop recording</button>
+        <button id="play-recording-btn">Play recording</button>
 
-    <fieldset id="metronome">
-      <legend>Metronome</legend>
-      <input type="range" min="1" max="180" value="60">
-      <button type="submit">Start</button>
-    </fieldset>
+        <fieldset id="metronome">
+            <legend>Metronome</legend>
+            <input type="range" min="1" max="180" value="60" />
+            <button type="submit">Start</button>
+        </fieldset>
 
-    <fieldset id="looper">
-      <legend>Looper</legend>
-      <input type="checkbox" name="enabled"></input>
-      <label for="enabled">Enable the looper</label>
-    </fieldset>
+        <fieldset id="looper">
+            <legend>Looper</legend>
+            <input type="checkbox" name="enabled" />
+            <label for="enabled">Enable the looper</label>
+        </fieldset>
 
-    <script src="./index.js"></script>
-  </body>
+        <script src="./index.js"></script>
+    </body>
 </html>

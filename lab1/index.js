@@ -5,17 +5,17 @@ function getInputElements() {
     return Array.of(...inputList.getElementsByTagName("input"));
 }
 
-const wyniki = document.querySelector('.wyniki');
+const wyniki = document.querySelector(".wyniki");
 
 for (const inputElement of inputElements) {
-    inputElement.addEventListener('change', () => {
+    inputElement.addEventListener("change", () => {
         wyniki.textContent = calculateStats();
     });
 }
 
 function calculateStats() {
     const inputElements = getInputElements();
-    const inputArrayValues = inputElements.map(input => Number(input.value));
+    const inputArrayValues = inputElements.map((input) => Number(input.value));
     const sum = inputArrayValues.reduce((sum, x) => sum + x, 0);
     const min = Math.min(...inputArrayValues);
     const max = Math.max(...inputArrayValues);
@@ -36,7 +36,7 @@ function addNewInput() {
 
     const input = document.createElement("input");
     input.type = "text";
-    input.addEventListener('change', () => {
+    input.addEventListener("change", () => {
         wyniki.textContent = calculateStats();
     });
 

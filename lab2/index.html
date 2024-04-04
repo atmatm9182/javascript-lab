@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
         <style>
             .slider {
@@ -11,14 +11,14 @@
                 border: 1px solid black;
                 margin: 10px auto 0px auto;
             }
-    
+
             #slider-inner {
                 width: 100%;
                 height: 100%;
                 background: lightblue;
                 display: flex;
             }
-    
+
             #slider-inner > .slide {
                 opacity: 0;
                 width: 0;
@@ -29,13 +29,13 @@
                 transition-property: width;
                 transition-duration: 1s;
             }
-    
+
             #slider-inner > .active {
                 opacity: 1;
                 width: 100%;
                 height: 100%;
             }
-    
+
             #slider-buttons {
                 margin: auto;
                 text-align: center;
@@ -60,27 +60,27 @@
             }
         </style>
     </head>
-    
+
     <body>
         <section class="slider">
             <div id="slider-inner">
-                <img class="slide active" src="./images/red.jpg" alt="red">
-                <img class="slide" src="./images/green.jpg" alt="green">
-                <img class="slide" src="./images/blue.jpg" alt="blue">
-                <img class="slide" src="./images/magenta.jpg" alt="magenta">
-                <img class="slide" src="./images/yellow.jpg" alt="yellow">
-                <img class="slide" src="./images/orange.jpg" alt="orange">
+                <img class="slide active" src="./images/red.jpg" alt="red" />
+                <img class="slide" src="./images/green.jpg" alt="green" />
+                <img class="slide" src="./images/blue.jpg" alt="blue" />
+                <img class="slide" src="./images/magenta.jpg" alt="magenta" />
+                <img class="slide" src="./images/yellow.jpg" alt="yellow" />
+                <img class="slide" src="./images/orange.jpg" alt="orange" />
             </div>
-   
+
             <div id="slider-buttons">
-                <input type="radio" name="img" value="1">
-                <input type="radio" name="img" value="2">
-                <input type="radio" name="img" value="3">
-                <input type="radio" name="img" value="4">
-                <input type="radio" name="img" value="5">
-                <input type="radio" name="img" value="6">
-                <br/>
-    
+                <input type="radio" name="img" value="1" />
+                <input type="radio" name="img" value="2" />
+                <input type="radio" name="img" value="3" />
+                <input type="radio" name="img" value="4" />
+                <input type="radio" name="img" value="5" />
+                <input type="radio" name="img" value="6" />
+                <br />
+
                 <button id="previous-btn">Previous</button>
                 <button id="next-btn">Next</button>
                 <button id="pause-btn">Pause</button>

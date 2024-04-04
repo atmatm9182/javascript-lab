@@ -21,7 +21,15 @@ class Note {
             .map((tag) => tag.trim());
         const dueTo = Date.parse(formData.get("due-to"));
 
-        return new Note(title, contents, color, pinned, tags, Date.now(), dueTo);
+        return new Note(
+            title,
+            contents,
+            color,
+            pinned,
+            tags,
+            Date.now(),
+            dueTo,
+        );
     }
 }
 
@@ -50,7 +58,7 @@ function renderNotes() {
     notes.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (b.pinned && !a.pinned) return 1;
-    
+
         return a.createdAt < b.createdAt ? -1 : 1;
     });
 
@@ -61,25 +69,32 @@ function renderNotes() {
         const noteContents = document.createElement("p");
         const noteCreatedAt = document.createElement("p");
         const noteDueTo = document.createElement("p");
-    
+
         noteTitle.textContent = note.title;
         noteTitle.style.fontSize = "1.2em";
 
         noteDueTo.textContent = `Due to: ${new Date(note.dueTo).toLocaleString()}`;
-    
+
         if (note.tags.length != 0)
             noteTags.textContent = `Tags: ${note.tags.join(" ")}`;
-    
+
         noteCreatedAt.textContent = `Created at: ${new Date(note.createdAt).toLocaleString()}`;
-    
+
         noteContents.textContent = note.contents;
-        noteContents.style = "border: 1px solid black; padding: 0.5em; background-color: white;";
-    
+        noteContents.style =
+            "border: 1px solid black; padding: 0.5em; background-color: white;";
+
         noteBody.style.backgroundColor = note.color;
-        noteBody.append(noteTitle, noteTags, noteCreatedAt, noteContents, noteDueTo);
-    
+        noteBody.append(
+            noteTitle,
+            noteTags,
+            noteCreatedAt,
+            noteContents,
+            noteDueTo,
+        );
+
         noteBody.style = `${noteStyle} background-color: ${note.color};`;
-    
+
         noteContainer.appendChild(noteBody);
     }
 }
@@ -161,7 +176,10 @@ searchBox.addEventListener("submit", (e) => {
     const submitter = searchBox.getElementsByTagName("button")[0];
     const formData = new FormData(searchBox, submitter);
 
-    const tags = formData.get("tags").split(",").filter(s => s.length !== 0);
+    const tags = formData
+        .get("tags")
+        .split(",")
+        .filter((s) => s.length !== 0);
     const title = formData.get("title");
     const color = formData.get("color");
 
@@ -181,13 +199,11 @@ function filterNotesBySearchQuery(query) {
     function getFilter({ tags, title, color }) {
         const filters = [];
         if (tags.length !== 0)
-            filters.push(note => noteTagsOverlap(note.tags, tags));
-        if (title.length !== 0)
-            filters.push(note => note.title === title);
-        if (color.length !== 0)
-            filters.push(note => note.color === color);
+            filters.push((note) => noteTagsOverlap(note.tags, tags));
+        if (title.length !== 0) filters.push((note) => note.title === title);
+        if (color.length !== 0) filters.push((note) => note.color === color);
 
-        return note => filters.every(filter => filter(note));
+        return (note) => filters.every((filter) => filter(note));
     }
 
     function noteTagsOverlap(noteTags, queryTags) {
@@ -208,16 +224,17 @@ renderNotes();
 const initialNotes = notes;
 
 setInterval(() => {
-  const messages = [];
-  for (const note of initialNotes) {
-    const diff = note.dueTo - Date.now();
-    if (diff <= 300_000) /* 5 minutes */ {
-      messages.push(`Note ${note.title} is due in ${Math.floor(diff / (1000 * 60))} minutes!`);
+    const messages = [];
+    for (const note of initialNotes) {
+        const diff = note.dueTo - Date.now();
+        if (diff <= 300_000) {
+            /* 5 minutes */ messages.push(
+                `Note ${note.title} is due in ${Math.floor(diff / (1000 * 60))} minutes!`,
+            );
+        }
     }
-  }
 
-  if (messages.length != 0)
-    alert(messages.join("\n"));
+    if (messages.length != 0) alert(messages.join("\n"));
 }, 60000);
 
 document.body.appendChild(createDefaultForm());

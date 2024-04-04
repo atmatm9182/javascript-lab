@@ -3,8 +3,7 @@ const soundElements = document.querySelectorAll("audio");
 const sounds = {};
 
 for (const sound of soundElements) {
-    if (sound.dataset.key)
-        sounds[sound.dataset.key] = sound;
+    if (sound.dataset.key) sounds[sound.dataset.key] = sound;
 }
 
 const recordButton = document.querySelector("#record-btn");
@@ -21,7 +20,7 @@ let looperInterval = null;
 looperEnabledCheckbox.addEventListener("click", () => {
     const soundsArray = Object.values(sounds);
     const maxSoundDuration = soundsArray.reduce((prev, cur) => {
-        return cur.duration > prev.duration ? cur : prev
+        return cur.duration > prev.duration ? cur : prev;
     }, soundsArray[0]).duration;
 
     for (const [_, sound] of Object.entries(sounds)) {
@@ -39,45 +38,47 @@ looperEnabledCheckbox.addEventListener("click", () => {
     } else {
         clearInterval(looperInterval);
     }
-})
+});
 
-recordButton.addEventListener('click', () => {
+recordButton.addEventListener("click", () => {
     const recordingStartTime = Date.now();
 
-    recordingEventListener = e => {
+    recordingEventListener = (e) => {
         const sound = sounds[e.key];
         sound.currentTime = 0;
         sound.play();
 
-        recordingMap.push({ sound, delay: Date.now() - recordingStartTime })
+        recordingMap.push({ sound, delay: Date.now() - recordingStartTime });
     };
 
-    window.addEventListener('keypress', recordingEventListener);
+    window.addEventListener("keypress", recordingEventListener);
 });
 
 const startButton = document.querySelector("#play-recording-btn");
 
 function startButtonEventListener() {
     for (const { sound, delay } of recordingMap) {
-        setTimeout(() => { sound.currentTime = 0; sound.play() }, delay)
+        setTimeout(() => {
+            sound.currentTime = 0;
+            sound.play();
+        }, delay);
     }
 }
 
-startButton.addEventListener('click', startButtonEventListener);
+startButton.addEventListener("click", startButtonEventListener);
 
 const stopButton = document.querySelector("#stop-btn");
-stopButton.addEventListener('click', () => {
+stopButton.addEventListener("click", () => {
     if (recordingEventListener)
-        window.removeEventListener('keypress', recordingEventListener);
+        window.removeEventListener("keypress", recordingEventListener);
 
-    window.addEventListener('keypress', e => {
+    window.addEventListener("keypress", (e) => {
         const sound = sounds[e.key];
-        if (!sound)
-            return;
+        if (!sound) return;
 
         sound.currentTime = 0;
         sound.play();
-    })
+    });
 });
 
 const metronomeSound = document.querySelector("#metronome-sound");
@@ -94,8 +95,8 @@ metronomeButton.addEventListener("click", () => {
         metronomeTimer = null;
         metronomeButton.textContent = "Play";
     } else {
-        metronomeTimer = setInterval(() => { 
-            metronomeSound.currentTime = 0; 
+        metronomeTimer = setInterval(() => {
+            metronomeSound.currentTime = 0;
             metronomeSound.play();
         }, 60000 / freq.valueAsNumber);
         metronomeButton.textContent = "Stop";

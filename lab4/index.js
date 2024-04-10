@@ -1,11 +1,12 @@
 class Note {
-    constructor(title, contents, color, pinned, tags, createdAt, dueTo) {
+    constructor(title, contents, color, pinned, tags, createdAt, todos, dueTo) {
         this.title = title;
         this.contents = contents;
         this.color = color;
         this.pinned = pinned;
         this.tags = tags;
         this.createdAt = createdAt;
+        this.todos = todos;
         this.dueTo = dueTo;
     }
 
@@ -19,7 +20,13 @@ class Note {
             .split(",")
             .filter((tag) => tag.length != 0)
             .map((tag) => tag.trim());
-        const dueTo = Date.parse(formData.get("due-to"));
+        const todos = formData
+            .get("todos")
+            .split(",")
+            .filter((tag) => tag.length != 0)
+            .map((tag) => tag.trim());
+        const formDueTo = formData.get("due-to");
+        const dueTo = formDueTo ? Date.parse(formDueTo) : undefined;
 
         return new Note(
             title,
@@ -28,19 +35,20 @@ class Note {
             pinned,
             tags,
             Date.now(),
+            todos,
             dueTo,
         );
     }
 }
 
-let notes = [];
+let currentlyShownNotes = [];
 
 for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (!key.startsWith("note-")) continue;
 
     const note = localStorage.getItem(key);
-    notes.push(JSON.parse(note));
+    currentlyShownNotes.push(JSON.parse(note));
 }
 
 const noteStyle = `
@@ -55,48 +63,95 @@ const formStyle = noteStyle;
 const noteContainer = document.querySelector("#note-container");
 
 function renderNotes() {
-    notes.sort((a, b) => {
+    currentlyShownNotes.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (b.pinned && !a.pinned) return 1;
 
         return a.createdAt < b.createdAt ? -1 : 1;
     });
 
-    for (const note of notes) {
-        const noteBody = document.createElement("section");
-        const noteTitle = document.createElement("header");
-        const noteTags = document.createElement("p");
-        const noteContents = document.createElement("p");
-        const noteCreatedAt = document.createElement("p");
-        const noteDueTo = document.createElement("p");
-
-        noteTitle.textContent = note.title;
-        noteTitle.style.fontSize = "1.2em";
-
-        noteDueTo.textContent = `Due to: ${new Date(note.dueTo).toLocaleString()}`;
-
-        if (note.tags.length != 0)
-            noteTags.textContent = `Tags: ${note.tags.join(" ")}`;
-
-        noteCreatedAt.textContent = `Created at: ${new Date(note.createdAt).toLocaleString()}`;
-
-        noteContents.textContent = note.contents;
-        noteContents.style =
-            "border: 1px solid black; padding: 0.5em; background-color: white;";
-
-        noteBody.style.backgroundColor = note.color;
-        noteBody.append(
-            noteTitle,
-            noteTags,
-            noteCreatedAt,
-            noteContents,
-            noteDueTo,
-        );
-
-        noteBody.style = `${noteStyle} background-color: ${note.color};`;
-
-        noteContainer.appendChild(noteBody);
+    for (const note of currentlyShownNotes) {
+        const noteHTML = createNote(note);
+        noteContainer.appendChild(noteHTML);
     }
+}
+
+function createNote(note) {
+    const noteBody = document.createElement("section");
+    const noteTitle = document.createElement("header");
+    const noteTags = document.createElement("p");
+    const noteContents = document.createElement("p");
+    const noteCreatedAt = document.createElement("p");
+
+    noteTitle.textContent = note.title;
+    noteTitle.style.fontSize = "1.2em";
+
+    if (note.tags.length != 0)
+        noteTags.textContent = `Tags: ${note.tags.join(" ")}`;
+
+    noteCreatedAt.textContent = `Created at: ${new Date(note.createdAt).toLocaleString()}`;
+
+    noteContents.textContent = note.contents;
+    noteContents.style =
+        "border: 1px solid black; padding: 0.5em; background-color: white;";
+
+    noteBody.style.backgroundColor = note.color;
+    noteBody.append(
+        noteTitle,
+        noteTags,
+        noteContents,
+    );
+
+    if (note.todos.length != 0) {
+        const noteTodos = document.createElement("div");
+        for (const todo of note.todos) {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = todo;
+
+            const label = document.createElement("label");
+            label.htmlFor = todo;
+            label.textContent = todo;
+
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "X";
+
+            const linebreak = document.createElement("br");
+
+            removeButton.addEventListener("click", () => {
+                checkbox.remove();
+                label.remove();
+                removeButton.remove();
+                linebreak.remove();
+
+                const todoIdx = note.todos.findIndex(t => t === todo);
+                note.todos.splice(todoIdx, 1);
+
+                localStorage.setItem(`note-${note.title}`, JSON.stringify(note));
+            });
+
+            noteTodos.append(
+                checkbox,
+                label,
+                removeButton,
+                linebreak,
+            );
+        }
+
+        noteBody.appendChild(noteTodos);
+    }
+
+    if (note.dueTo) {
+        const noteDueTo = document.createElement("p");
+        noteDueTo.textContent = `Due to: ${new Date(note.dueTo).toLocaleString()}`;
+        noteBody.appendChild(noteDueTo);
+    }
+
+    noteBody.style = `${noteStyle} background-color: ${note.color};`;
+
+    noteBody.append(noteCreatedAt);
+
+    return noteBody;
 }
 
 const formHtml = `
@@ -108,15 +163,20 @@ const formHtml = `
 <label for="contents">Contents</label>
 <br>
 
-<input name="pinned" type="checkbox" />
-<label for="pinned">Pin</label> 
-
 <input name="tags" type="text" />
 <label for="tags">Tags</label>
 <br>
 
 <input name="due-to" type="text" />
 <label for="due-to">Due to</label>
+<br>
+
+<input name="todos" type="text" />
+<label for="todos">Todos</label>
+<br>
+
+<input name="pinned" type="checkbox" />
+<label for="pinned">Pin</label> 
 <br>
 `;
 
@@ -129,7 +189,6 @@ function createDefaultForm() {
     form.append(...colorSelectors);
 
     const button = document.createElement("button");
-    button.style.display = "block";
     button.innerText = "Create";
     form.appendChild(button);
 
@@ -138,7 +197,7 @@ function createDefaultForm() {
         const formData = new FormData(form, submitter);
         const note = Note.fromForm(formData);
 
-        notes.push(formData);
+        currentlyShownNotes.push(note);
         localStorage.setItem(`note-${note.title}`, JSON.stringify(note));
     });
 
@@ -186,7 +245,7 @@ searchBox.addEventListener("submit", (e) => {
     e.preventDefault();
 
     if (tags.length === 0 && title === "" && color === "") {
-        notes = initialNotes;
+        currentlyShownNotes = initialNotes;
         noteContainer.innerHTML = "";
         renderNotes();
         return;
@@ -214,21 +273,25 @@ function filterNotesBySearchQuery(query) {
         return false;
     }
 
-    notes = initialNotes.filter(getFilter(query));
+    currentlyShownNotes = initialNotes.filter(getFilter(query));
     noteContainer.innerHTML = "";
 
     renderNotes();
 }
 
+// initial setup
 renderNotes();
-const initialNotes = notes;
+const initialNotes = currentlyShownNotes;
 
 setInterval(() => {
     const messages = [];
     for (const note of initialNotes) {
+        if (!note.dueTo)
+            continue;
+
         const diff = note.dueTo - Date.now();
-        if (diff <= 300_000) {
-            /* 5 minutes */ messages.push(
+        if (diff <= 300_000 /* 5 minutes */) {
+            messages.push(
                 `Note ${note.title} is due in ${Math.floor(diff / (1000 * 60))} minutes!`,
             );
         }

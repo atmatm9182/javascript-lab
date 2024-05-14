@@ -4,10 +4,12 @@ const baseApiPath = "https://api.openweathermap.org";
 const searchbox = document.querySelector("#searchbox");
 const forecastsContainer = document.querySelector("#forecasts");
 
-const localStorageCitiesKey = "forecast-cities";
+const forecastsCacheKey = "forecast-cities";
 
 let forecastsCount = 0;
 const maxForecastsCount = 10;
+
+const fiveMinutesInMilliseconds = 1000 * 60 * 5;
 
 startApp();
 
@@ -18,18 +20,24 @@ async function startApp() {
 }
 
 async function restoreForecastsFromStorage() {
-    const citiesItem = localStorage.getItem(localStorageCitiesKey);
-    if (!citiesItem) {
-        localStorage.setItem(localStorageCitiesKey, JSON.stringify([]));
+    const forecastsItem = localStorage.getItem(forecastsCacheKey);
+    if (!forecastsItem) {
+        setForecastsInCache([]);
         return;
     }
 
-    const cities = JSON.parse(citiesItem);
-    for (const city of cities) {
+    const forecasts = JSON.parse(forecastsItem);
+    for (const forecast of forecasts) {
+        if (Date.now() - forecast.lastUpdated > 5000) {
+            const forecast = await getForecastForCity(forecast.city);
+            addForecastToDocument(forecast.weather);
+            continue;
+        }
+
         try {
-            await addCityForecastToDocument(city);
+            addWeatherForecastToDocument(forecast.weather);
         } catch (e) {
-            console.error(`Failed to get forecast for city ${city}: ${e}`);
+            console.error(`Failed to get forecast for city ${forecast}: ${e}`);
         }
     }
 }
@@ -49,19 +57,28 @@ async function searchboxEventListener(e) {
     await addCityForecast(city);
 }
 
-async function addCityForecastToDocument(city) {
-    const forecast = await getForecastForCity(city);
-    const html = htmlForForecast(forecast);
+function addWeatherForecastToDocument(weather) {
+    const html = htmlForWeather(weather);
     forecastsContainer.appendChild(html);
     forecastsCount++;
 }
 
-function getForecastForCity(city) {
-    const path = `${baseApiPath}/data/2.5/weather?appid=${apiKey}&q=${city}&units=metric`;
-    return fetch(path).then((res) => res.json());
+class Forecast {
+    constructor(city, weather, lastUpdated) {
+        this.city = city;
+        this.weather = weather;
+        this.lastUpdated = lastUpdated;
+    }
 }
 
-function htmlForForecast({ main, name: city, weather }) {
+function getForecastForCity(city) {
+    const path = `${baseApiPath}/data/2.5/weather?appid=${apiKey}&q=${city}&units=metric`;
+    return fetch(path)
+        .then((res) => res.json())
+        .then((f) => new Forecast(city, f, Date.now()));
+}
+
+function htmlForWeather({ main, name: city, weather }) {
     const temp = main.temp;
     const humidity = main.humidity;
     const mainWeather = weather[0];
@@ -94,7 +111,6 @@ function htmlForForecast({ main, name: city, weather }) {
 }
 
 function createForecastRemoveButtonEventListener(city) {
-    console.log(city);
     return (e) => {
         e.target.parentElement.remove();
         removeCityForecast(city);
@@ -103,34 +119,40 @@ function createForecastRemoveButtonEventListener(city) {
 
 function removeCityForecast(city) {
     forecastsCount--;
-    const cities = getForecastCities();
+    const cities = getForecastsFromCache();
     const cityIndex = cities.indexOf(city);
     cities.splice(cityIndex, 1);
 
-    setForecastCities(cities);
+    setForecastsInCache(cities);
+}
+
+function addForecastToDocument(forecast) {
+    const html = htmlForWeather(forecast);
+    forecastsContainer.appendChild(html);
 }
 
 async function addCityForecast(city) {
     try {
-        await addCityForecastToDocument(city);
-        addCityToLocalStorage(city);
+        const forecast = await getForecastForCity(city);
+        addForecastToDocument(forecast.weather);
+        addForecastToCache(forecast);
     } catch (e) {
         console.error(`Failed to get forecast for city ${city}: ${e}`);
     }
 }
 
-function getForecastCities() {
-    return JSON.parse(localStorage.getItem(localStorageCitiesKey));
+function getForecastsFromCache() {
+    return JSON.parse(localStorage.getItem(forecastsCacheKey));
 }
 
-function setForecastCities(cities) {
-    localStorage.setItem(localStorageCitiesKey, JSON.stringify(cities));
+function setForecastsInCache(forecasts) {
+    localStorage.setItem(forecastsCacheKey, JSON.stringify(forecasts));
 }
 
-function addCityToLocalStorage(city) {
-    const cities = getForecastCities();
-    cities.push(city);
-    setForecastCities(cities);
+function addForecastToCache({ city, weather }) {
+    const cities = getForecastsFromCache();
+    cities.push({ city, weather });
+    setForecastsInCache(cities);
 }
 
 function getIconSource({ icon }) {
@@ -138,20 +160,20 @@ function getIconSource({ icon }) {
 }
 
 function enableForecastActualization() {
-    setInterval(
-        () => {
-            updateForecasts();
-        },
-        1000 * 60 * 5,
-    );
+    setInterval(() => {
+        updateForecasts();
+    }, fiveMinutesInMilliseconds);
 }
 
 async function updateForecasts() {
-    const cities = getForecastCities();
+    const forecasts = getForecastsFromCache();
     const promises = [];
 
-    for (const city of cities) {
-        promises.push(getForecastForCity(city).then(htmlForForecast));
+    for (const forecast of forecasts) {
+        const promise = getForecastForCity(forecast.city).then((f) =>
+            htmlForWeather(f.weather),
+        );
+        promises.push(promise);
     }
 
     const forecastElements = await Promise.all(promises);

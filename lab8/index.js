@@ -11,12 +11,14 @@ const maxForecastsCount = 10;
 
 startApp();
 
-function startApp() {
-    searchbox.addEventListener("submit", searchboxEventListener);
-    restoreForecastsFromStorage();
+async function startApp() {
+    searchbox.addEventListener("submit", (e) => searchboxEventListener(e));
+    enableForecastActualization();
+    await restoreForecastsFromStorage();
+    console.log("started");
 }
 
-function restoreForecastsFromStorage() {
+async function restoreForecastsFromStorage() {
     const citiesItem = localStorage.getItem(localStorageCitiesKey);
     if (!citiesItem) {
         localStorage.setItem(localStorageCitiesKey, JSON.stringify([]));
@@ -25,11 +27,15 @@ function restoreForecastsFromStorage() {
 
     const cities = JSON.parse(citiesItem);
     for (const city of cities) {
-        addCityForecastToDocument(city);
+        try {
+            await addCityForecastToDocument(city);
+        } catch (e) {
+            console.error(`Failed to get forecast for city ${city}: ${e}`);
+        }
     }
 }
 
-function searchboxEventListener(e) {
+async function searchboxEventListener(e) {
     e.preventDefault();
 
     if (forecastsCount >= maxForecastsCount) {
@@ -41,7 +47,7 @@ function searchboxEventListener(e) {
     const city = input.value;
     input.value = "";
 
-    addCityForecast(city);
+    await addCityForecast(city);
 }
 
 async function addCityForecastToDocument(city) {
@@ -53,7 +59,6 @@ async function addCityForecastToDocument(city) {
 
 function getForecastForCity(city) {
     const path = `${baseApiPath}/data/2.5/weather?appid=${apiKey}&q=${city}&units=metric`;
-    console.log(path);
     return fetch(path).then((res) => res.json());
 }
 
@@ -90,6 +95,7 @@ function htmlForForecast({ main, name: city, weather }) {
 }
 
 function createForecastRemoveButtonEventListener(city) {
+    console.log(city);
     return (e) => {
         e.target.parentElement.remove();
         removeCityForecast(city);
@@ -99,15 +105,20 @@ function createForecastRemoveButtonEventListener(city) {
 function removeCityForecast(city) {
     forecastsCount--;
     const cities = getForecastCities();
-    const cityIndex = cities.findIndex((c) => c === city);
+    const cityIndex = cities.indexOf(city);
     cities.splice(cityIndex, 1);
 
     setForecastCities(cities);
+    console.log(`removed ${city}`);
 }
 
-function addCityForecast(city) {
-    addCityForecastToDocument(city);
-    addCityToLocalStorage(city);
+async function addCityForecast(city) {
+    try {
+        await addCityForecastToDocument(city);
+        addCityToLocalStorage(city);
+    } catch (e) {
+        console.error(`Failed to get forecast for city ${city}: ${e}`);
+    }
 }
 
 function getForecastCities() {
@@ -126,4 +137,35 @@ function addCityToLocalStorage(city) {
 
 function getIconSource({ icon }) {
     return `https://openweathermap.org/img/wn/${icon}@2x.png`;
+}
+
+function enableForecastActualization() {
+    setInterval(
+        () => {
+            updateForecasts();
+        },
+        1000 * 60 * 5,
+    );
+}
+
+async function updateForecasts() {
+    const cities = getForecastCities();
+    const promises = [];
+
+    for (const city of cities) {
+        promises.push(getForecastForCity(city).then(htmlForForecast));
+    }
+
+    const forecastElements = await Promise.all(promises);
+    removeAllForecasts();
+
+    for (const forecast of forecastElements) {
+        forecastsContainer.appendChild(forecast);
+    }
+
+    console.log("updated");
+}
+
+function removeAllForecasts() {
+    forecastsContainer.innerHTML = "";
 }

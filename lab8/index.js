@@ -15,7 +15,6 @@ async function startApp() {
     searchbox.addEventListener("submit", (e) => searchboxEventListener(e));
     enableForecastActualization();
     await restoreForecastsFromStorage();
-    console.log("started");
 }
 
 async function restoreForecastsFromStorage() {
@@ -109,7 +108,6 @@ function removeCityForecast(city) {
     cities.splice(cityIndex, 1);
 
     setForecastCities(cities);
-    console.log(`removed ${city}`);
 }
 
 async function addCityForecast(city) {
@@ -162,8 +160,6 @@ async function updateForecasts() {
     for (const forecast of forecastElements) {
         forecastsContainer.appendChild(forecast);
     }
-
-    console.log("updated");
 }
 
 function removeAllForecasts() {

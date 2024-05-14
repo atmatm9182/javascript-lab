@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+
+        <style>
+            #forecasts {
+                margin: 1em;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+
+            .forecast {
+                border: 2px solid black;
+                border-radius: 1em;
+                padding: 1em;
+                padding-top: 0;
+                min-width: 15vw;
+                margin: 1em;
+            }
+
+            .forecast > header {
+                display: inline;
+                padding: 0;
+                font-size: 1.5em;
+            }
+
+            .forecast > img {
+                width: 3em;
+                height: 3em;
+                transform: translateY(1em);
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="forecasts"></div>
+
+        <form id="searchbox">
+            <input name="city" type="text" />
+            <label for="city">City name</label>
+            <button type="submit">Get forecast</button>
+        </form>
+
+        <script src="./index.js"></script>
+    </body>
+</html>

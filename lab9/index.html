@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            canvas {
+                border: 2px solid black;
+                display: block;
+                margin: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas width="800" height="800"></canvas>
+
+        <div id="control-panel">
+            <p id="frame-counter"></p>
+
+            <button id="start-button">Start/Stop</button>
+            <button id="reset-button">Reset</button>
+
+            <input name="line-length" type="text" value="20"/>
+            <label for="line-length">
+                Line length (canvas width percentage)
+            </label>
+
+            <input name="balls-count" type="number" value="15"/>
+            <label for="balls-count">Number of balls</label>
+        </div>
+
+        <script src="./index.js"></script>
+    </body>
+</html>

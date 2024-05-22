@@ -17,6 +17,31 @@ class Vector2 {
     }
 
     /**
+     * @param {Vector2} other
+     */
+    sub(other) {
+        this.x -= other.x;
+        this.y -= other.y;
+    }
+
+    /**
+     * Performs a component-wise multiplication of vectors
+     * @param {Vector2} other
+     */
+    mul(other) {
+        this.x *= other.x;
+        this.y *= other.y;
+    }
+
+    /**
+     * Negates the vector
+     */
+    neg() {
+        this.x = -this.x;
+        this.y = -this.y;
+    }
+
+    /**
      * @param {Vector2} v1
      * @param {Vector2} v2
      * @returns {number}
@@ -50,6 +75,22 @@ class Entity {
         this.acceleration = acceleration;
         this.size = size;
     }
+
+    /**
+     * This function assumes the entities to be rectangular and checks if they collide
+     * @param {Entity} other
+     * @returns {boolean}
+     */
+    collidesWith(other) {
+        const collisionX =
+            this.position.x + this.size.x >= other.position.x - other.size.x &&
+            this.position.x - this.size.x <= other.position.x + other.size.x;
+        const collisionY =
+            this.position.y + this.size.y >= other.position.y - other.size.x &&
+            this.position.y - this.size.y <= other.position.y + other.size.x;
+
+        return collisionX && collisionY;
+    }
 }
 
 /**
@@ -73,6 +114,18 @@ class Ball extends Entity {
     /**
      * @returns {Ball}
      */
+    clone() {
+        return new Ball(
+            cloneWithPrototype(this.position),
+            cloneWithPrototype(this.acceleration),
+            this.radius,
+            this.thickness,
+        );
+    }
+
+    /**
+     * @returns {Ball}
+     */
     static random() {
         const radius = randomNumberRange(10, 20);
         const position = new Vector2(
@@ -86,6 +139,48 @@ class Ball extends Entity {
         const thickness = randomNumberRange(4, 8);
 
         return new Ball(position, acceleration, radius, thickness);
+    }
+}
+
+/**
+ * @extends Entity
+ */
+class Cursor extends Entity {
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
+    constructor(x, y) {
+        const position = new Vector2(x, y);
+        const acceleration = Vector2.unit(0);
+        const size = Vector2.unit(10);
+
+        super(position, acceleration, size);
+    }
+
+    /**
+     * @returns {Vector2}
+     */
+    canvasPosition() {
+        const rect = canvas.getBoundingClientRect();
+        return new Vector2(
+            this.position.x - (window.innerWidth - canvasWidth) / 2,
+            this.position.y - rect.y,
+        );
+    }
+
+    /**
+     * @param {Entity} other
+     * @returns {boolean}
+     */
+    collidesWith(other) {
+        const savedPosition = cloneWithPrototype(this.position);
+
+        this.position = this.canvasPosition();
+        const collides = super.collidesWith(other);
+        this.position = savedPosition;
+
+        return collides;
     }
 }
 
@@ -105,14 +200,28 @@ const originalBallsCount = Number.parseInt(ballsCountInput.value);
 const originalBallsState = new Array(originalBallsCount)
     .fill(undefined)
     .map((_) => Ball.random());
-const balls = structuredClone(originalBallsState);
+const balls = originalBallsState.map((b) => b.clone());
+
+const cursor = new Cursor(0, 0);
 
 startApp();
 
 function startApp() {
     addControlEventListeners();
+
+    addEventListener("mousemove", mouseEventListener);
+
     drawBalls();
+
     requestAnimationFrame(singleFrameAction);
+}
+
+/**
+ * @param {MouseEvent} e
+ */
+function mouseEventListener(e) {
+    cursor.position.x = e.x;
+    cursor.position.y = e.y;
 }
 
 let lastFrameTimestamp = Date.now();
@@ -182,6 +291,10 @@ function drawBalls() {
         const ball1 = balls[i];
         drawBall(ball1);
 
+        if (isCursorInCanvas() && cursor.collidesWith(ball1)) {
+            yeetBallAwayFromCursor(ball1);
+        }
+
         for (let j = 0; j < balls.length; j++) {
             if (i == j) {
                 continue;
@@ -191,6 +304,25 @@ function drawBalls() {
             drawLineIfCloseEnough(ball1, ball2, defaultLineLength);
         }
     }
+}
+
+/**
+ * @param {Ball} ball
+ */
+function yeetBallAwayFromCursor(ball) {
+    ball.acceleration.neg();
+
+    const delta = new Vector2(10, 10);
+    const scale = new Vector2(
+        Math.sign(ball.acceleration.x),
+        Math.sign(ball.acceleration.y),
+    );
+
+    delta.mul(scale);
+
+    ball.acceleration.add(delta);
+    updateMovingBall(ball);
+    ball.acceleration.sub(delta);
 }
 
 /**
@@ -374,4 +506,26 @@ function getInputs() {
     }
 
     return [lineInput, ballInput];
+}
+
+/**
+ * @returns {boolean}
+ */
+function isCursorInCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const x =
+        cursor.position.x >= rect.x && cursor.position.x <= rect.x + rect.width;
+    const y =
+        cursor.position.y >= rect.y &&
+        cursor.position.y <= rect.y + rect.height;
+
+    return x && y;
+}
+
+/**
+ * @param {any} obj
+ */
+function cloneWithPrototype(obj) {
+    const proto = Object.getPrototypeOf(obj);
+    return Object.setPrototypeOf(structuredClone(obj), proto);
 }

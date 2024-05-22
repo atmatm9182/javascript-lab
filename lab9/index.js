@@ -268,13 +268,16 @@ function ballsCountInputEventListener(e) {
 
     if (delta > 0) {
         for (let i = 0; i < delta; i++) {
-            balls.push(Ball.random());
+            const ball = Ball.random();
+            balls.push(ball);
+            originalBallsState.push(structuredClone(ball));
         }
         return;
     }
 
     for (let i = delta; i < 0; i++) {
         balls.pop();
+        originalBallsState.pop();
     }
 }
 

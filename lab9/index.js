@@ -22,7 +22,9 @@ class Vector2 {
      * @returns {number}
      */
     static distance(v1, v2) {
-        throw "todo";
+        const s1 = Math.pow(v2.y - v1.y, 2);
+        const s2 = Math.pow(v2.x - v1.x, 2);
+        return Math.sqrt(s1 + s2);
     }
 
     /**
@@ -223,21 +225,6 @@ function randomChoise(arr) {
 }
 
 /**
- * @param {Ball} b1
- * @param {Ball} b2
- */
-function checkBallCollision(b1, b2) {
-    const collisionX =
-        b1.position.x + b1.radius >= b2.position.x - b2.radius &&
-        b1.position.x - b1.radius <= b2.position.x + b2.radius;
-    const collisionY =
-        b1.position.y + b1.radius >= b2.position.y - b2.radius &&
-        b1.position.y - b1.radius <= b2.position.y + b2.radius;
-
-    return collisionX && collisionY;
-}
-
-/**
  * @param {number} min
  * @param {number} max
  * @returns {number}
@@ -252,9 +239,7 @@ function randomNumberRange(min, max) {
  * @param {number} distance
  */
 function drawLineIfCloseEnough(ball1, ball2, distance) {
-    const s1 = Math.pow(ball2.position.y - ball1.position.y, 2);
-    const s2 = Math.pow(ball2.position.x - ball1.position.x, 2);
-    const d = Math.sqrt(s1 + s2);
+    const d = Vector2.distance(ball1.position, ball2.position);
 
     if (d <= distance) {
         ctx.lineWidth = 4;

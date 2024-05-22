@@ -117,17 +117,11 @@ function onHoleCollision(ballState, hole) {
 }
 
 function updateObjectAcceleration(obj) {
-    if (
-        obj.x - obj.radius <= 0 ||
-        obj.x + obj.radius >= canvasWidth
-    ) {
+    if (obj.x - obj.radius <= 0 || obj.x + obj.radius >= canvasWidth) {
         obj.accelX = -obj.accelX;
     }
 
-    if (
-        obj.y - obj.radius <= 0 ||
-        obj.y + obj.radius >= canvasHeight
-    ) {
+    if (obj.y - obj.radius <= 0 || obj.y + obj.radius >= canvasHeight) {
         obj.accelY = -obj.accelY;
     }
 }

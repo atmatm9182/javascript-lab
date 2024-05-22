@@ -1,18 +1,52 @@
+class Vector2 {
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * @param {Vector2} other
+     */
+    add(other) {
+        this.x += other.x;
+        this.y += other.y;
+    }
+
+    /**
+     * @param {Vector2} v1
+     * @param {Vector2} v2
+     * @returns {number}
+     */
+    static distance(v1, v2) {
+        throw "todo";
+    }
+
+    /**
+     * @param {number} x
+     * @returns {Vector2}
+     */
+    static unit(x) {
+        return new Vector2(x, x);
+    }
+}
+
 /**
  * Represents a moving object that has a position and acceleration
  */
 class Entity {
     /**
-     * @param {number} x
-     * @param {number} y
-     * @param {number} accelX
-     * @param {number} accelY
+     * @param {Vector2} position
+     * @param {Vector2} acceleration
+     * @param {Vector2} size
      */
-    constructor(x, y, accelX, accelY) {
-        this.x = x;
-        this.y = y;
-        this.accelX = accelX;
-        this.accelY = accelY;
+    constructor(position, acceleration, size) {
+        this.position = position;
+        this.acceleration = acceleration;
+        this.size = size;
     }
 }
 
@@ -21,15 +55,15 @@ class Entity {
  */
 class Ball extends Entity {
     /**
-     * @param {number} x
-     * @param {number} y
-     * @param {number} accelX
-     * @param {number} accelY
+     * @param {Vector2} position
+     * @param {Vector2} acceleration
      * @param {number} radius
      * @param {number} thickness
      */
-    constructor(x, y, accelX, accelY, radius, thickness) {
-        super(x, y, accelX, accelY);
+    constructor(position, acceleration, radius, thickness) {
+        const size = Vector2.unit(radius);
+        super(position, acceleration, size);
+
         this.radius = radius;
         this.thickness = thickness;
     }
@@ -37,24 +71,19 @@ class Ball extends Entity {
     /**
      * @returns {Ball}
      */
-    static empty() {
-        return new Ball(0, 0, 0, 0, 0, 0);
-    }
-
-    /**
-     * @returns {Ball}
-     */
     static random() {
         const radius = randomNumberRange(10, 20);
-
-        return new Ball(
+        const position = new Vector2(
             randomNumberRange(radius, canvasWidth - radius),
             randomNumberRange(radius, canvasHeight - radius),
-            randomNumberRange(-10, 10),
-            randomNumberRange(-10, 10),
-            radius,
-            randomNumberRange(4, 8),
         );
+        const acceleration = new Vector2(
+            randomNumberRange(-10, 10),
+            randomNumberRange(-10, 10),
+        );
+        const thickness = randomNumberRange(4, 8);
+
+        return new Ball(position, acceleration, radius, thickness);
     }
 }
 
@@ -123,19 +152,25 @@ function updateBalls() {
 
 /** @param {Ball} ball */
 function updateMovingBall(ball) {
-    ball.x += ball.accelX;
-    ball.y += ball.accelY;
+    ball.position.x += ball.acceleration.x;
+    ball.position.y += ball.acceleration.y;
     updateBallAcceleration(ball);
 }
 
 /** @param {Ball} ball */
 function updateBallAcceleration(ball) {
-    if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= canvasWidth) {
-        ball.accelX = -ball.accelX;
+    if (
+        ball.position.x - ball.radius <= 0 ||
+        ball.position.x + ball.radius >= canvasWidth
+    ) {
+        ball.acceleration.x = -ball.acceleration.x;
     }
 
-    if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvasHeight) {
-        ball.accelY = -ball.accelY;
+    if (
+        ball.position.y - ball.radius <= 0 ||
+        ball.position.y + ball.radius >= canvasHeight
+    ) {
+        ball.acceleration.y = -ball.acceleration.y;
     }
 }
 
@@ -162,7 +197,7 @@ function drawBalls() {
 function drawBall(ball) {
     ctx.lineWidth = ball.thickness;
     ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+    ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
     ctx.stroke();
 }
 
@@ -193,11 +228,11 @@ function randomChoise(arr) {
  */
 function checkBallCollision(b1, b2) {
     const collisionX =
-        b1.x + b1.radius >= b2.x - b2.radius &&
-        b1.x - b1.radius <= b2.x + b2.radius;
+        b1.position.x + b1.radius >= b2.position.x - b2.radius &&
+        b1.position.x - b1.radius <= b2.position.x + b2.radius;
     const collisionY =
-        b1.y + b1.radius >= b2.y - b2.radius &&
-        b1.y - b1.radius <= b2.y + b2.radius;
+        b1.position.y + b1.radius >= b2.position.y - b2.radius &&
+        b1.position.y - b1.radius <= b2.position.y + b2.radius;
 
     return collisionX && collisionY;
 }
@@ -217,14 +252,14 @@ function randomNumberRange(min, max) {
  * @param {number} distance
  */
 function drawLineIfCloseEnough(ball1, ball2, distance) {
-    const s1 = Math.pow(ball2.y - ball1.y, 2);
-    const s2 = Math.pow(ball2.x - ball1.x, 2);
+    const s1 = Math.pow(ball2.position.y - ball1.position.y, 2);
+    const s2 = Math.pow(ball2.position.x - ball1.position.x, 2);
     const d = Math.sqrt(s1 + s2);
 
     if (d <= distance) {
         ctx.lineWidth = 4;
-        ctx.moveTo(ball1.x, ball1.y);
-        ctx.lineTo(ball2.x, ball2.y);
+        ctx.moveTo(ball1.position.x, ball1.position.y);
+        ctx.lineTo(ball2.position.x, ball2.position.y);
         ctx.stroke();
     }
 }

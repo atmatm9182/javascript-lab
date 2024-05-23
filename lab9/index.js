@@ -170,6 +170,20 @@ class Cursor extends Entity {
     }
 
     /**
+     * @returns {boolean}
+     */
+    isInCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const x =
+            this.position.x >= rect.x && this.position.x <= rect.x + rect.width;
+        const y =
+            this.position.y >= rect.y &&
+            this.position.y <= rect.y + rect.height;
+
+        return x && y;
+    }
+
+    /**
      * @param {Entity} other
      * @returns {boolean}
      */
@@ -291,7 +305,7 @@ function drawBalls() {
         const ball1 = balls[i];
         drawBall(ball1);
 
-        if (isCursorInCanvas() && cursor.collidesWith(ball1)) {
+        if (cursor.isInCanvas() && cursor.collidesWith(ball1)) {
             yeetBallAwayFromCursor(ball1);
         }
 
@@ -322,7 +336,6 @@ function yeetBallAwayFromCursor(ball) {
 
     ball.acceleration.add(delta);
     updateMovingBall(ball);
-    ball.acceleration.sub(delta);
 }
 
 /**
@@ -506,20 +519,6 @@ function getInputs() {
     }
 
     return [lineInput, ballInput];
-}
-
-/**
- * @returns {boolean}
- */
-function isCursorInCanvas() {
-    const rect = canvas.getBoundingClientRect();
-    const x =
-        cursor.position.x >= rect.x && cursor.position.x <= rect.x + rect.width;
-    const y =
-        cursor.position.y >= rect.y &&
-        cursor.position.y <= rect.y + rect.height;
-
-    return x && y;
 }
 
 /**

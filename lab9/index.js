@@ -56,7 +56,7 @@ class Vector2 {
      * @param {number} x
      * @returns {Vector2}
      */
-    static unit(x) {
+    static single(x) {
         return new Vector2(x, x);
     }
 }
@@ -104,7 +104,7 @@ class Ball extends Entity {
      * @param {number} thickness
      */
     constructor(position, acceleration, radius, thickness) {
-        const size = Vector2.unit(radius);
+        const size = Vector2.single(radius);
         super(position, acceleration, size);
 
         this.radius = radius;
@@ -152,8 +152,8 @@ class Cursor extends Entity {
      */
     constructor(x, y) {
         const position = new Vector2(x, y);
-        const acceleration = Vector2.unit(0);
-        const size = Vector2.unit(10);
+        const acceleration = Vector2.single(0);
+        const size = Vector2.single(10);
 
         super(position, acceleration, size);
     }
@@ -222,18 +222,48 @@ startApp();
 
 function startApp() {
     addControlEventListeners();
-
-    addEventListener("mousemove", mouseEventListener);
+    addMouseEventListeners();
 
     drawBalls();
 
     requestAnimationFrame(singleFrameAction);
 }
 
+function addMouseEventListeners() {
+    addEventListener("mousemove", mouseMoveEventListener);
+    addEventListener("click", mouseClickEventListener);
+}
+
 /**
  * @param {MouseEvent} e
  */
-function mouseEventListener(e) {
+function mouseClickEventListener(e) {
+    if (!cursor.isInCanvas()) {
+        return;
+    }
+
+    for (const [idx, ball] of balls.entries()) {
+        if (!cursor.collidesWith(ball)) {
+            continue;
+        }
+
+        balls.splice(idx, 1);
+        originalBallsState.splice(idx, 1);
+
+        const newBall1 = Ball.random();
+        balls.push(newBall1);
+        originalBallsState.push(newBall1.clone());
+
+        const newBall2 = Ball.random();
+        balls.push(newBall2);
+        originalBallsState.push(newBall2.clone());
+    }
+}
+
+/**
+ * @param {MouseEvent} e
+ */
+function mouseMoveEventListener(e) {
     cursor.position.x = e.x;
     cursor.position.y = e.y;
 }
@@ -326,7 +356,7 @@ function drawBalls() {
 function yeetBallAwayFromCursor(ball) {
     ball.acceleration.neg();
 
-    const delta = new Vector2(10, 10);
+    const delta = Vector2.single(10);
     const scale = new Vector2(
         Math.sign(ball.acceleration.x),
         Math.sign(ball.acceleration.y),

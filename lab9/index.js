@@ -198,6 +198,83 @@ class Cursor extends Entity {
     }
 }
 
+class BallCollection {
+    /**
+     * @param {number} n
+     */
+    constructor(n) {
+        this.#originalBalls = new Array(n)
+            .fill(undefined)
+            .map((_) => Ball.random());
+        this.#balls = this.#originalBalls.map((b) => b.clone());
+    }
+
+    /**
+     * @param {Ball} ball
+     */
+    push(ball) {
+        this.#balls.push(ball);
+        this.#originalBalls.push(ball);
+    }
+
+    /**
+     * @returns {Ball | undefined}
+     */
+    pop() {
+        this.#originalBalls.pop();
+        return this.#balls.pop();
+    }
+
+    /**
+     * @returns {Iterable<[number, Ball]>}
+     */
+    entries() {
+        return this.#balls.entries();
+    }
+
+    /**
+     * @param {number} idx
+     */
+    remove(idx) {
+        this.#balls.splice(idx, 1);
+        this.#originalBalls.splice(idx, 1);
+    }
+
+    /**
+     * @returns {Iterable<Ball>}
+     */
+    iterator() {
+        return this.#balls;
+    }
+
+    /**
+     * @param {number} idx
+     * @returns {Ball}
+     */
+    at(idx) {
+        return this.#balls[idx];
+    }
+
+    /**
+     * Resets the balls to their original state
+     */
+    reset() {
+        for (let i = 0; i < this.#balls.length; i++) {
+            this.#balls[i] = this.#originalBalls[i].clone();
+        }
+    }
+
+    /**
+     * @returns {number}
+     */
+    get length() {
+        return this.#balls.length;
+    }
+
+    #originalBalls;
+    #balls;
+}
+
 const canvas = getCanvas();
 const ctx = getCanvasContext(canvas);
 
@@ -211,10 +288,7 @@ let defaultLineLength =
 
 const originalBallsCount = Number.parseInt(ballsCountInput.value);
 
-const originalBallsState = new Array(originalBallsCount)
-    .fill(undefined)
-    .map((_) => Ball.random());
-const balls = originalBallsState.map((b) => b.clone());
+const balls = new BallCollection(originalBallsCount);
 
 const cursor = new Cursor(0, 0);
 
@@ -247,16 +321,13 @@ function mouseClickEventListener(e) {
             continue;
         }
 
-        balls.splice(idx, 1);
-        originalBallsState.splice(idx, 1);
+        balls.remove(idx);
 
         const newBall1 = Ball.random();
         balls.push(newBall1);
-        originalBallsState.push(newBall1.clone());
 
         const newBall2 = Ball.random();
         balls.push(newBall2);
-        originalBallsState.push(newBall2.clone());
     }
 }
 
@@ -300,7 +371,7 @@ function singleFrameAction(timestamp) {
 }
 
 function updateBalls() {
-    for (const ball of balls) {
+    for (const ball of balls.iterator()) {
         updateMovingBall(ball);
     }
 }
@@ -332,7 +403,7 @@ function updateBallAcceleration(ball) {
 function drawBalls() {
     ctx.reset();
     for (let i = 0; i < balls.length; i++) {
-        const ball1 = balls[i];
+        const ball1 = balls.at(i);
         drawBall(ball1);
 
         if (cursor.isInCanvas() && cursor.collidesWith(ball1)) {
@@ -344,7 +415,7 @@ function drawBalls() {
                 continue;
             }
 
-            const ball2 = balls[j];
+            const ball2 = balls.at(j);
             drawLineIfCloseEnough(ball1, ball2, defaultLineLength);
         }
     }
@@ -465,14 +536,12 @@ function ballsCountInputEventListener(e) {
         for (let i = 0; i < delta; i++) {
             const ball = Ball.random();
             balls.push(ball);
-            originalBallsState.push(structuredClone(ball));
         }
         return;
     }
 
     for (let i = delta; i < 0; i++) {
         balls.pop();
-        originalBallsState.pop();
     }
 }
 
@@ -502,10 +571,7 @@ function startButtonEventListener(_e) {
  * @param {Event} _e
  */
 function resetButtonEventListener(_e) {
-    for (let i = 0; i < balls.length; i++) {
-        balls[i] = structuredClone(originalBallsState[i]);
-    }
-
+    balls.reset();
     drawBalls();
 }
 

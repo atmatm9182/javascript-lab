@@ -197,14 +197,11 @@ function randomChoise(arr) {
 }
 
 function checkCollision(obj1, obj2) {
-    const collisionX =
-        obj1.x + obj1.radius >= obj2.x - obj2.radius &&
-        obj1.x - obj1.radius <= obj2.x + obj2.radius;
-    const collisionY =
-        obj1.y + obj1.radius >= obj2.y - obj2.radius &&
-        obj1.y - obj1.radius <= obj2.y + obj2.radius;
+    const a = Math.abs(obj1.x - obj2.x);
+    const b = Math.abs(obj1.y - obj2.y);
+    const c = Math.sqrt(a ** 2 + b ** 2);
 
-    return collisionX && collisionY;
+    return c <= obj1.radius + obj2.radius;
 }
 
 function randomizeHole(hole) {

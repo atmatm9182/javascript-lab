@@ -17,6 +17,16 @@ const looperEnabledCheckbox = looper.getElementsByTagName("input").item(0);
 
 let looperIntervals = [];
 
+function playAndScheduleSound(sound, startTime) {
+    sound.currentTime = 0;
+    sound.play();
+
+    recordingMap.push({
+        sound,
+        delay: Date.now() - startTime + sound.duration * 1000,
+    });
+}
+
 recordButton.addEventListener("click", () => {
     recordingMap = [];
 
@@ -28,19 +38,12 @@ recordButton.addEventListener("click", () => {
             return;
         }
 
-        sound.play();
-        recordingMap.push({
-            sound,
-            delay: Date.now() - recordingStartTime,
-        });
+        playAndScheduleSound(sound, recordingStartTime);
 
-        const interval = setInterval(() => {
-            sound.play();
-            recordingMap.push({
-                sound,
-                delay: Date.now() - recordingStartTime,
-            });
-        }, sound.duration * 1000);
+        const interval = setInterval(
+            () => playAndScheduleSound(sound, recordingStartTime),
+            sound.duration * 1000
+        );
 
         looperIntervals.push(interval);
     }
@@ -51,10 +54,7 @@ recordButton.addEventListener("click", () => {
             return;
         }
 
-        sound.currentTime = 0;
-        sound.play();
-
-        recordingMap.push({ sound, delay: Date.now() - recordingStartTime });
+        playAndScheduleSound(sound, recordingStartTime);
     };
 
     recordingEventListener = looperEnabledCheckbox.checked
